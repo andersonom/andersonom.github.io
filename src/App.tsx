@@ -28,7 +28,7 @@ function App() {
     fetch('https://api.github.com/users/andersonom/repos?sort=updated&per_page=100')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('GitHub unavailable'))))
       .then((data: Repo[]) => {
-        setRepos(data.filter((repo) => !repo.fork && !repo.name.toLowerCase().startsWith('aws-lab')))
+        setRepos(data.filter((repo) => !repo.fork && !/^(developing-)?aws-lab/i.test(repo.name)))
         setRepoState('ready')
       })
       .catch(() => setRepoState('error'))
