@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Experience from './Experience'
 
-type AppId = 'welcome' | 'arcade' | 'projects'
+type AppId = 'welcome' | 'arcade' | 'projects' | 'experience'
 type WindowState = { id: AppId; minimized: boolean; z: number; x: number; y: number }
 type Repo = { name: string; description: string | null; html_url: string; language: string | null; stargazers_count: number; fork: boolean }
 
-const appInfo: Record<AppId, { title: string; icon: string }> = {
-  welcome: { title: 'Welcome.exe', icon: '✦' },
-  arcade: { title: 'Arcade', icon: '🕹️' },
-  projects: { title: 'Projects', icon: '📁' },
+const appInfo: Record<AppId, { title: string; icon: string; description: string }> = {
+  welcome: { title: 'Welcome.exe', icon: '✦', description: 'about this desktop' },
+  arcade: { title: 'Arcade', icon: '🕹️', description: 'play pizzeria math' },
+  projects: { title: 'Projects', icon: '📁', description: 'github repositories' },
+  experience: { title: 'Experience', icon: '💼', description: 'professional timeline' },
 }
+const appIds = Object.keys(appInfo) as AppId[]
 
 function App() {
   const [windows, setWindows] = useState<WindowState[]>([{ id: 'welcome', minimized: false, z: 2, x: 0, y: 0 }])
@@ -56,9 +59,9 @@ function App() {
   return <main className="desktop" ref={desktopRef} onPointerDown={() => menuOpen && setMenuOpen(false)}>
     <div className="aurora aurora-one" /><div className="aurora aurora-two" />
     <div className="desktop-grid" aria-label="Área de trabalho">
-      <DesktopIcon icon="✦" label="Welcome.exe" onDoubleClick={() => openApp('welcome')} />
-      <DesktopIcon icon="🕹️" label="Arcade" onDoubleClick={() => openApp('arcade')} />
-      <DesktopIcon icon="📁" label="Projects" onDoubleClick={() => openApp('projects')} />
+      {appIds.map((id) => (
+        <DesktopIcon key={id} icon={appInfo[id].icon} label={appInfo[id].title} onOpen={() => openApp(id)} />
+      ))}
     </div>
     <section className="windows" onPointerDown={(event) => event.stopPropagation()}>
       {windows.map((windowState) => <Window key={windowState.id} state={windowState} onDrag={dragWindow} onFocus={focusApp} onClose={closeApp} onMinimize={minimizeApp} repos={repos} repoState={repoState} />)}
@@ -72,17 +75,30 @@ function App() {
   </main>
 }
 
-function DesktopIcon({ icon, label, onDoubleClick }: { icon: string; label: string; onDoubleClick: () => void }) {
-  return <button className="desktop-icon" onDoubleClick={onDoubleClick} onClick={onDoubleClick}><span className="icon-art">{icon}</span><span>{label}</span></button>
+function DesktopIcon({ icon, label, onOpen }: { icon: string; label: string; onOpen: () => void }) {
+  return <button className="desktop-icon" onClick={onOpen}><span className="icon-art">{icon}</span><span>{label}</span></button>
 }
 
 function StartMenu({ onOpen }: { onOpen: (id: AppId) => void }) {
-  return <div className="start-menu" onPointerDown={(event) => event.stopPropagation()}><div className="menu-brand"><span>ANDERSON</span><strong>OS</strong><small>V1.0 · ONLINE</small></div><div className="menu-items"><button onClick={() => onOpen('welcome')}><span>✦</span><div><strong>Welcome.exe</strong><small>about this desktop</small></div></button><button onClick={() => onOpen('arcade')}><span>🕹️</span><div><strong>Arcade</strong><small>play pizzeria math</small></div></button><button onClick={() => onOpen('projects')}><span>📁</span><div><strong>Projects</strong><small>github repositories</small></div></button></div><div className="menu-footer">made with curiosity <span>♥</span></div></div>
+  return (
+    <div className="start-menu" onPointerDown={(event) => event.stopPropagation()}>
+      <div className="menu-brand"><span>ANDERSON</span><strong>OS</strong><small>V1.0 · ONLINE</small></div>
+      <div className="menu-items">
+        {appIds.map((id) => (
+          <button key={id} onClick={() => onOpen(id)}>
+            <span>{appInfo[id].icon}</span>
+            <div><strong>{appInfo[id].title}</strong><small>{appInfo[id].description}</small></div>
+          </button>
+        ))}
+      </div>
+      <div className="menu-footer">made with curiosity <span>♥</span></div>
+    </div>
+  )
 }
 
 function Window({ state, onDrag, onFocus, onClose, onMinimize, repos, repoState }: { state: WindowState; onDrag: (id: AppId, event: React.PointerEvent<HTMLElement>) => void; onFocus: (id: AppId) => void; onClose: (id: AppId) => void; onMinimize: (id: AppId) => void; repos: Repo[]; repoState: 'loading' | 'ready' | 'error' }) {
   if (state.minimized) return null
-  return <article className={`os-window window-${state.id}`} style={{ zIndex: state.z, transform: `translate(calc(-50% + ${state.x}px), ${state.y}px)` }} onPointerDown={() => onFocus(state.id)}><header className="window-titlebar" onPointerDown={(event) => event.target instanceof HTMLElement && event.target.closest('button') ? undefined : onDrag(state.id, event)}><span><span className="window-icon">{appInfo[state.id].icon}</span>{appInfo[state.id].title}</span><div className="window-actions"><button aria-label="Minimizar" onClick={() => onMinimize(state.id)}>−</button><button aria-label="Fechar" onClick={() => onClose(state.id)}>×</button></div></header><div className="window-body">{state.id === 'welcome' && <Welcome />}{state.id === 'arcade' && <Arcade />}{state.id === 'projects' && <Projects repos={repos} state={repoState} />}</div></article>
+  return <article className={`os-window window-${state.id}`} style={{ zIndex: state.z, transform: `translate(calc(-50% + ${state.x}px), ${state.y}px)` }} onPointerDown={() => onFocus(state.id)}><header className="window-titlebar" onPointerDown={(event) => event.target instanceof HTMLElement && event.target.closest('button') ? undefined : onDrag(state.id, event)}><span><span className="window-icon">{appInfo[state.id].icon}</span>{appInfo[state.id].title}</span><div className="window-actions"><button aria-label="Minimizar" onClick={() => onMinimize(state.id)}>−</button><button aria-label="Fechar" onClick={() => onClose(state.id)}>×</button></div></header><div className="window-body">{state.id === 'welcome' && <Welcome />}{state.id === 'arcade' && <Arcade />}{state.id === 'projects' && <Projects repos={repos} state={repoState} />}{state.id === 'experience' && <Experience />}</div></article>
 }
 
 function Welcome() { return <div className="welcome"><div className="welcome-orb">✦</div><div><p className="eyebrow">ANDERSONOS / SYSTEM READY</p><h1>Welcome to<br /><em>my corner</em> of the web.</h1><p className="welcome-copy">Um pequeno desktop para explorar jogos, projetos e ideias. Dê um duplo clique nos ícones ou abra o menu <b>start</b> para começar.</p><div className="status-line"><i /> all systems nominal <span>v1.0.0</span></div></div></div> }
