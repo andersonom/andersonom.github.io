@@ -5,6 +5,10 @@
 body { margin: 0; min-width: 320px; overflow: hidden; }
 button, a { font: inherit; color: inherit; }
 button { cursor: pointer; }
+
+/* Empty space in the window layer must let clicks reach the desktop. */
+.windows { pointer-events: none; }
+.os-window { pointer-events: auto; }
 .desktop { min-height: 100vh; overflow: hidden; position: relative; background: radial-gradient(circle at 78% 15%, #21415d 0, transparent 30%), linear-gradient(135deg, #08131f 0%, #0d2031 48%, #0a1822 100%); }
 .desktop::before { content: ''; position: absolute; inset: 0; opacity: .14; background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 80px 80px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
 .aurora { position: absolute; width: 45vw; height: 45vw; border-radius: 50%; filter: blur(70px); opacity: .18; pointer-events: none; }.aurora-one { background: #c35b3a; top: 50%; left: -15%; }.aurora-two { background: #7b6df2; top: -25%; right: -8%; }
