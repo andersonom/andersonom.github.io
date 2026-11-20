@@ -13,7 +13,7 @@ const appInfo: Record<AppId, { title: string; icon: string; description: string 
 }
 const appIds = Object.keys(appInfo) as AppId[]
 const projectDescriptions: Partial<Record<string, string>> = {
-  'students-eve': 'This repository contains the environment setup for the Students Manager application, including Docker configurations and Visual Studio solution files.',
+  'students-env': 'This repository contains the environment setup for the Students Manager application, including Docker configurations and Visual Studio solution files.',
 }
 
 function App() {
