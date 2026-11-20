@@ -8,8 +8,8 @@ type Role = {
 
 const roles: Role[] = [
   { company: 'BDC', period: 'May 2026 – Present', location: 'Montreal, Canada · Hybrid · Full-time contract' },
-  { company: 'National Bank of Canada', period: 'Jul 2022 – May 2026', location: 'Montreal, Canada · Hybrid', summary: 'Skills listed: continuous integration and delivery (CI/CD).' },
-  { company: 'SII Canada', period: 'Sep 2020 – Jul 2022', location: 'Montreal, Canada · Remote', summary: 'Skills listed: CI/CD and OpenShift.' },
+  { company: 'National Bank of Canada', period: 'Jul 2022 – May 2026', location: 'Montreal, Canada · Hybrid' },
+  { company: 'SII Canada', period: 'Sep 2020 – Jul 2022', location: 'Montreal, Canada · Remote' },
   { company: 'TOTVS', period: 'Apr 2020 – Aug 2020', location: 'São Paulo, Brazil · Remote', summary: 'Helped design and build a .NET payment hub MVP with interchangeable providers. Used Event Storming to model the workflows.' },
   { company: 'Vivo (Telefônica Brasil)', period: 'Apr 2019 – Mar 2020', location: 'São Paulo, Brazil', summary: 'Developed .NET financial microservices to integrate a cloud service broker with Jamcracker.' },
   { company: 'Sage', period: 'Dec 2018 – Mar 2019', location: 'São Paulo, Brazil · Remote', summary: 'Worked across the stack on a financial management MVP, with a focus on the front end.' },
