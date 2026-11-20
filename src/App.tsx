@@ -12,6 +12,9 @@ const appInfo: Record<AppId, { title: string; icon: string; description: string 
   experience: { title: 'Experience', icon: '💼', description: 'professional timeline' },
 }
 const appIds = Object.keys(appInfo) as AppId[]
+const projectDescriptions: Partial<Record<string, string>> = {
+  'students-eve': 'This repository contains the environment setup for the Students Manager application, including Docker configurations and Visual Studio solution files.',
+}
 
 function App() {
   const [windows, setWindows] = useState<WindowState[]>([{ id: 'welcome', minimized: false, z: 2, x: 0, y: 0 }])
@@ -24,7 +27,10 @@ function App() {
   useEffect(() => {
     fetch('https://api.github.com/users/andersonom/repos?sort=updated&per_page=100')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('GitHub unavailable'))))
-      .then((data: Repo[]) => { setRepos(data.filter((repo) => !repo.fork)); setRepoState('ready') })
+      .then((data: Repo[]) => {
+        setRepos(data.filter((repo) => !repo.fork && !repo.name.toLowerCase().startsWith('aws-lab')))
+        setRepoState('ready')
+      })
       .catch(() => setRepoState('error'))
   }, [])
 
@@ -103,6 +109,36 @@ function Window({ state, onDrag, onFocus, onClose, onMinimize, repos, repoState 
 
 function Welcome() { return <div className="welcome"><div className="welcome-orb">✦</div><div><p className="eyebrow">ANDERSONOS / SYSTEM READY</p><h1>Welcome to<br /><em>my corner</em> of the web.</h1><p className="welcome-copy">Um pequeno desktop para explorar jogos, projetos e ideias. Dê um duplo clique nos ícones ou abra o menu <b>start</b> para começar.</p><div className="status-line"><i /> all systems nominal <span>v1.0.0</span></div></div></div> }
 function Arcade() { return <div className="arcade"><div className="arcade-intro"><div><p className="eyebrow">ARCADE / PLAYER 01</p><h2>Pizzeria<br /><span>Math Game</span></h2><p>Teste suas habilidades matemáticas e ajude a pizzaria a manter os pedidos saindo quentinhos.</p></div><span className="coin">✦</span></div><a className="launch-button" href="https://andersonom.github.io/pizzeria-math-game/" target="_blank" rel="noreferrer">Abrir jogo em nova aba <span>↗</span></a><div className="arcade-frame"><iframe src="https://andersonom.github.io/pizzeria-math-game/" title="Pizzeria Math Game" /></div></div> }
-function Projects({ repos, state }: { repos: Repo[]; state: 'loading' | 'ready' | 'error' }) { return <div className="projects"><div className="projects-head"><div><p className="eyebrow">GITHUB / ANDERSONOM</p><h2>Selected<br /><em>projects</em></h2></div><a href="https://github.com/andersonom" target="_blank" rel="noreferrer">github ↗</a></div>{state === 'loading' && <p className="loading">conectando ao github...</p>}{state === 'error' && <p className="loading">não foi possível carregar agora. <a href="https://github.com/andersonom">ver no github ↗</a></p>}{state === 'ready' && <div className="repo-list">{repos.map((repo) => <a className="repo-card" href={repo.html_url} target="_blank" rel="noreferrer" key={repo.name}><div><strong>{repo.name}</strong><p>{repo.description || 'sem descrição — ainda em construção'}</p></div><span>{repo.language || 'code'} ↗</span></a>)}</div>}</div> }
+function Projects({ repos, state }: { repos: Repo[]; state: 'loading' | 'ready' | 'error' }) {
+  return (
+    <div className="projects">
+      <div className="projects-head">
+        <div>
+          <p className="eyebrow">GITHUB / ANDERSONOM</p>
+          <h2>Selected<br /><em>projects</em></h2>
+        </div>
+        <a href="https://github.com/andersonom" target="_blank" rel="noreferrer">github ↗</a>
+      </div>
+      {state === 'loading' && <p className="loading">conectando ao github...</p>}
+      {state === 'error' && <p className="loading">não foi possível carregar agora. <a href="https://github.com/andersonom">ver no github ↗</a></p>}
+      {state === 'ready' && (
+        <div className="repo-list">
+          {repos.map((repo) => {
+            const description = projectDescriptions[repo.name] ?? repo.description?.trim()
+            return (
+              <a className="repo-card" href={repo.html_url} target="_blank" rel="noreferrer" key={repo.name}>
+                <div>
+                  <strong>{repo.name}</strong>
+                  {description && <p>{description}</p>}
+                </div>
+                <span>{repo.language || 'code'} ↗</span>
+              </a>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default App
