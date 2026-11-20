@@ -107,7 +107,55 @@ function Window({ state, onDrag, onFocus, onClose, onMinimize, repos, repoState 
   return <article className={`os-window window-${state.id}`} style={{ zIndex: state.z, transform: `translate(calc(-50% + ${state.x}px), ${state.y}px)` }} onPointerDown={() => onFocus(state.id)}><header className="window-titlebar" onPointerDown={(event) => event.target instanceof HTMLElement && event.target.closest('button') ? undefined : onDrag(state.id, event)}><span><span className="window-icon">{appInfo[state.id].icon}</span>{appInfo[state.id].title}</span><div className="window-actions"><button aria-label="Minimizar" onClick={() => onMinimize(state.id)}>−</button><button aria-label="Fechar" onClick={() => onClose(state.id)}>×</button></div></header><div className="window-body">{state.id === 'welcome' && <Welcome />}{state.id === 'arcade' && <Arcade />}{state.id === 'projects' && <Projects repos={repos} state={repoState} />}{state.id === 'experience' && <Experience />}</div></article>
 }
 
-function Welcome() { return <div className="welcome"><div className="welcome-orb">✦</div><div><p className="eyebrow">ANDERSONOS / SYSTEM READY</p><h1>Welcome to<br /><em>my corner</em> of the web.</h1><p className="welcome-copy">Um pequeno desktop para explorar jogos, projetos e ideias. Dê um duplo clique nos ícones ou abra o menu <b>start</b> para começar.</p><div className="status-line"><i /> all systems nominal <span>v1.0.0</span></div></div></div> }
+const welcomeLanguages = [
+  {
+    code: 'pt-BR', flag: '🇧🇷', label: 'Português',
+    before: 'Um pequeno desktop para explorar jogos, projetos e ideias. Dê um duplo clique nos ícones ou abra o menu',
+    after: 'para começar.',
+  },
+  {
+    code: 'en', flag: '🇬🇧', label: 'English',
+    before: 'A little desktop for exploring games, projects, and ideas. Double-click the icons or open the',
+    after: 'menu to get started.',
+  },
+  {
+    code: 'fr', flag: '🇫🇷', label: 'Français',
+    before: 'Un petit bureau pour explorer des jeux, des projets et des idées. Double-cliquez sur les icônes ou ouvrez le menu',
+    after: 'pour commencer.',
+  },
+] as const
+
+function Welcome() {
+  const [language, setLanguage] = useState<(typeof welcomeLanguages)[number]>(welcomeLanguages[0])
+
+  return (
+    <div className="welcome">
+      <div className="welcome-orb">✦</div>
+      <div>
+        <p className="eyebrow">ANDERSONOS / SYSTEM READY</p>
+        <h1>Welcome to<br /><em>my corner</em> of the web.</h1>
+        <div className="welcome-languages" role="group" aria-label="Idioma do texto de boas-vindas">
+          {welcomeLanguages.map((option) => (
+            <button
+              type="button"
+              key={option.code}
+              lang={option.code}
+              aria-label={option.label}
+              aria-pressed={option.code === language.code}
+              onClick={() => setLanguage(option)}
+            >
+              <span aria-hidden="true">{option.flag}</span>
+            </button>
+          ))}
+        </div>
+        <p className="welcome-copy" lang={language.code} aria-live="polite">
+          {language.before} <b>start</b> {language.after}
+        </p>
+        <div className="status-line"><i /> all systems nominal <span>v1.0.0</span></div>
+      </div>
+    </div>
+  )
+}
 function Arcade() { return <div className="arcade"><div className="arcade-intro"><div><p className="eyebrow">ARCADE / PLAYER 01</p><h2>Pizzeria<br /><span>Math Game</span></h2><p>Teste suas habilidades matemáticas e ajude a pizzaria a manter os pedidos saindo quentinhos.</p></div><span className="coin">✦</span></div><a className="launch-button" href="https://andersonom.github.io/pizzeria-math-game/" target="_blank" rel="noreferrer">Abrir jogo em nova aba <span>↗</span></a><div className="arcade-frame"><iframe src="https://andersonom.github.io/pizzeria-math-game/" title="Pizzeria Math Game" /></div></div> }
 function Projects({ repos, state }: { repos: Repo[]; state: 'loading' | 'ready' | 'error' }) {
   return (

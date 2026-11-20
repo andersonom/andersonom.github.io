@@ -10,6 +10,23 @@ button { cursor: pointer; }
 .windows { pointer-events: none; }
 .os-window { pointer-events: auto; }
 
+.welcome-languages { display: flex; gap: 6px; margin-top: 14px; }
+.welcome-languages button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #c3ccc4;
+  border-radius: 5px;
+  background: #e6e9df;
+  font-size: 1.2rem;
+}
+.welcome-languages button:hover { border-color: #596e7c; }
+.welcome-languages button[aria-pressed="true"] {
+  border-color: #24455e;
+  background: #cedce3;
+  box-shadow: inset 0 -2px #24455e;
+}
+.welcome .welcome-copy { margin-top: 12px; }
+
 .window-experience .window-body {
   min-height: 0;
   max-height: max(120px, calc(76svh - 106px));
